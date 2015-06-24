@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+# localhost
+127.0.0.1	localhost.localdomain localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+{% for interface in ansible_interfaces %}{% if interface != "lo" and interface != "venet0" %}{% for n in hostvars[inventory_hostname]["ansible_" + interface] %}
+{% if n == "ipv4" %}{{ hostvars[inventory_hostname]["ansible_" + interface][n]["address"] }}	{{ inventory_hostname }} {{ ansible_nodename }}
+{% endif %}
+{% if n == "ipv6" %}{% for m in hostvars[inventory_hostname]["ansible_" + interface][n] %}{% if m.scope == "global" %}{{ m.address }}	{{ inventory_hostname }} {{ ansible_nodename }}
+{% endif %}{% endfor %}{% endif %}
+{% endfor %}{% endif %}{% endfor %}
+
+{% if hosts_additional_addresses is defined %}
+# additional addresses
+{% for address in hosts_additional_addresses %}
+{{ address.ip }}       {{ address.hostname }}
+{% endfor %}{% endif %}
+

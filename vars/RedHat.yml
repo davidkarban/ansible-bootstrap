@@ -1,0 +1,7 @@
+---
+bootstrap_pkgs:
+  - libselinux-python
+  - redhat-lsb-core
+  - net-tools
+  - openssh-clients
+
