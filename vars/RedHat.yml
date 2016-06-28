@@ -1,6 +1,9 @@
 ---
 bootstrap_pkgs:
   - libselinux-python
+  - libsemanage-python
+  - policycoreutils-python
+  - checkpolicy
   - redhat-lsb-core
   - net-tools
   - openssh-clients
