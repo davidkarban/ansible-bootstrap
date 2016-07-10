@@ -8,12 +8,7 @@
   yum: name={{ item }} state=present
   with_items: "{{ bootstrap_pkgs }}"
   when: ansible_os_family == 'RedHat'
-  register: "{{ bootstrap_basic_packages }}"
-
-- name: Reload facts if installed basic packages (lsb packages) 
-  tags: bootstrap  
-  setup:
-  when: bootstrap_basic_packages.changed
+  register: bootstrap_basic_packages
 
 #- name: Ensure Debian has python available (for minimal images)
 
@@ -22,6 +17,11 @@
   apt: name={{ item }} state=present update_cache=yes cache_valid_time=600
   with_items: "{{ bootstrap_pkgs }}"
   when: ansible_os_family == 'Debian' and ansible_lsb.major_release|int > 5
+
+- name: Reload facts if installed basic (lsb) packages
+  tags: bootstrap  
+  setup:
+  when: bootstrap_basic_packages.changed
 
 - name: Ensure hostname is same as ansible_nodename
   tags: 
