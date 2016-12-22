@@ -6,37 +6,21 @@
 - name: Install basic packages needed for ansible to work well
   tags: bootstrap
   yum: name={{ item }} state=present
-  with_items: bootstrap_pkgs
+  with_items: "{{ bootstrap_pkgs }}"
   when: ansible_os_family == 'RedHat'
   register: bootstrap_basic_packages
-
-- name: Reload facts if installed basic packages (lsb packages) 
-  tags: bootstrap  
-  setup:
-  when: bootstrap_basic_packages.changed
 
 #- name: Ensure Debian has python available (for minimal images)
 
 - name: Install basic packages in Debian derivates
   tags: bootstrap
   apt: name={{ item }} state=present update_cache=yes cache_valid_time=600
-  with_items: bootstrap_pkgs
+  with_items: "{{ bootstrap_pkgs }}"
   when: ansible_os_family == 'Debian' and ansible_lsb.major_release|int > 5
 
-- name: Ensure hostname is same as ansible_nodename
-  tags: 
-    - bootstrap
-    - hostname
-#  hostname: name={{ inventory_hostname }}
-  hostname: name={{ nodename|default(ansible_nodename) }}
-  when: 
-    - ansible_os_family != "Gentoo" or (ansible_os_family == "RedHat" and ansible_lsb.major_release|int > 6)
+- name: Reload facts if installed basic (lsb) packages
+  tags: bootstrap  
+  setup:
+  when: bootstrap_basic_packages.changed
 
-#- name: Ensure hosts file is in place
-#  tags: 
-#    - bootstrap
-#    - hosts
-#  template: src=hosts.j2 dest=/etc/hosts owner=root group=root mode=0644
-#  when:
-#    - not (ansible_virtualization_role is defined and ansible_virtualization_role == "guest" and ansible_virtualization_type == "openvz")
 
