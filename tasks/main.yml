@@ -10,8 +10,6 @@
   when: ansible_os_family == 'RedHat'
   register: bootstrap_basic_packages
 
-#- name: Ensure Debian has python available (for minimal images)
-
 - name: Install basic packages in Debian derivates
   tags: bootstrap
   apt: name={{ item }} state=present update_cache=yes cache_valid_time=600
