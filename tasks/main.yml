@@ -1,24 +1,13 @@
 ---
 - name: Load the OS specific variables
-  tags: bootstrap
   include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Install basic packages needed for ansible to work well
-  tags: bootstrap
-  yum: name={{ item }} state=present
-  with_items: "{{ bootstrap_pkgs }}"
-  when: ansible_os_family == 'RedHat'
+  yum: 
+    name: "{{ bootstrap_pkgs }}"
+    state: present
   register: bootstrap_basic_packages
 
-- name: Install basic packages in Debian derivates
-  tags: bootstrap
-  apt: name={{ item }} state=present update_cache=yes cache_valid_time=600
-  with_items: "{{ bootstrap_pkgs }}"
-  when: ansible_os_family == 'Debian' and ansible_lsb.major_release|int > 5
-
 - name: Reload facts if installed basic (lsb) packages
-  tags: bootstrap  
   setup:
   when: bootstrap_basic_packages.changed
-
-
